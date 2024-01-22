@@ -218,7 +218,7 @@ async function validateClient(req, res) {
                 message: 'No existe body en el request'
             });
         } else {
-            const { email, document } = body
+            const { email, document, route_id } = body
             const find_client = await models.findOne('clients', { email: email, document: document })
             if (find_client.error) {
                 res.json({
@@ -233,7 +233,6 @@ async function validateClient(req, res) {
                 })
             } else {
                 const valide_date_route = await models.findOne('routes', { _id: route_id})
-                const route_id = body.route_id
                 let client_existent = await models.findOne('routes', { _id: route_id, 'assistants.client': find_client.data._id, 'assistants.is_prebook': false })
                 if (client_existent.data && !client_existent.error) {
                     res.json({

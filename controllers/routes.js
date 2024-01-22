@@ -123,7 +123,6 @@ async function getAllPrebook(req, res) {
 async function getAllRoutes(req, res) {
     try {
         const result_routes = await models.findLean('routes')
-        console.log("🚀 ~ getAllRoutes ~ result_routes:", result_routes)
         if (result_routes.error) {
             res.json({
                 error: true,
