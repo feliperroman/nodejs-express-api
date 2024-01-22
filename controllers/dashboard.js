@@ -288,7 +288,7 @@ async function validateClient(req, res) {
 
 async function getAllComments(req, res) {
     try {
-        const find_comments = await models.find('Comments')
+        const find_comments = await models.find('comments')
         if (find_comments.error) {
             res.json({
                 error: true,
@@ -320,7 +320,7 @@ async function getAllComments(req, res) {
 
 async function getVideos(req, res) {
     try {
-        const get_videos = await models.find('Videos')
+        const get_videos = await models.find('videos')
         if (get_videos.error) {
             res.json({
                 error: true,

@@ -703,7 +703,7 @@ async function createComment(req, res) {
                         message: 'No existe name o comment en body'
                     })
                 } else {
-                    const create_comment = await models.newDocument('Comments', req.body)
+                    const create_comment = await models.newDocument('comments', req.body)
                     if (create_comment.error) {
                         res.json({
                             error: true,
@@ -756,7 +756,7 @@ async function addImageComment(req, res) {
                 });
             } else {
                 let add_pic = await utils.uploadGallery(image[0], "comment_");
-                const insert = await models.findOneAndUpdate('Comments', { _id: body._id }, { image_url: add_pic.image })
+                const insert = await models.findOneAndUpdate('comments', { _id: body._id }, { image_url: add_pic.image })
                 if (insert.error) {
                     res.json({
                         error: true,
@@ -812,7 +812,7 @@ async function createVideo(req, res) {
                     message: 'El admin con ese id no existe o está inhabilitado'
                 });
             } else {
-                const add_video = await models.newDocument('Videos', { link: body.link })
+                const add_video = await models.newDocument('videos', { link: body.link })
                 if (add_video.error) {
                     res.json({
                         error: true,

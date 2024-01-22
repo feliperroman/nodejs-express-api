@@ -7,6 +7,7 @@ node_modules/
 transport.js
 .env
 
-
+.uploads/
+/uploads/
 .temp/
 /temp/
