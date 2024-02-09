@@ -39,33 +39,33 @@ async function getRecentRoutes(req, res) {
 
 function statusRoute(routes) {
     const estados = {
-      CasiLlena: 'Casi llena',
-      Disponible: 'Disponible',
-      Sincupos: 'Sin cupos'
+        CasiLlena: 'Casi llena',
+        Disponible: 'Disponible',
+        Sincupos: 'Sin cupos'
     };
-  
+
     const routesStatus = routes.map((route) => {
-      const ocupacion = route.assistants.length;
-      const maximo = route.quantity_persons;
-      let status = estados.Disponible;
-      if (ocupacion == maximo) {
-        status = estados.Sincupos;
-      }else if (ocupacion === 0) {
-        status = estados.Disponible;
-      } 
-      else if (ocupacion > 0.5 * maximo) {
-        status = estados.CasiLlena;
-      }
-      
-      return {
-        ...route,
-        quota_status: status
-      };
+        const ocupacion = route.assistants.length;
+        const maximo = route.quantity_persons;
+        let status = estados.Disponible;
+        if (ocupacion == maximo) {
+            status = estados.Sincupos;
+        } else if (ocupacion === 0) {
+            status = estados.Disponible;
+        }
+        else if (ocupacion > 0.5 * maximo) {
+            status = estados.CasiLlena;
+        }
+
+        return {
+            ...route,
+            quota_status: status
+        };
     });
-  
+
     return routesStatus.filter((route) => route.quota_status !== 'Sin cupos');
-  }
-  
+}
+
 async function createPreBookedNewUser(req, res) {
     try {
         const body = req.body
@@ -102,6 +102,8 @@ async function createPreBookedNewUser(req, res) {
                         email: body.email ? body.email : null,
                         rh: body.rh ? body.rh : null,
                         eps: body.eps ? body.eps : null,
+                        vegan: body.vegan ? body.eps.vegan : null,
+                        vegan_observations: body.vegan_observations ? body.eps.vegan_observations : null,
                         status: 'active',
                     }
                     const create_result = await models.newDocument('clients', data);
@@ -232,7 +234,7 @@ async function validateClient(req, res) {
                     message: 'El cliente no existe con ese correo y documento'
                 })
             } else {
-                const valide_date_route = await models.findOne('routes', { _id: route_id})
+                const valide_date_route = await models.findOne('routes', { _id: route_id })
                 let client_existent = await models.findOne('routes', { _id: route_id, 'assistants.client': find_client.data._id, 'assistants.is_prebook': false })
                 if (client_existent.data && !client_existent.error) {
                     res.json({

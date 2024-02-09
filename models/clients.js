@@ -9,6 +9,8 @@ const clientsSchema = mongoose.Schema({
     email        : String,
     rh           : String,
     eps          : String,
+    vegan_observations: String,
+    vegan        : String,
     status       : String,
     health_observations : String,
     createdAt: {
