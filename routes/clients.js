@@ -25,6 +25,7 @@ app.post('/delete', isValidToken, clientsController.post.deleteClient);
 app.post('/bookRoute',  clientsController.post.bookingRoute);
 app.post('/prebookRoute',  clientsController.post.prebookingRoute);
 app.post('/createInvoice',  clientsController.post.createInvoicesClients);
+app.post('/updateInvoice',  clientsController.post.updateInvoicesClients);
 app.get('/getGallery', clientsController.get.getAllGallery); 
 
 

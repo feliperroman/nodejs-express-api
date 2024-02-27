@@ -264,6 +264,7 @@ async function validateClient(req, res) {
                     res.json({
                         error: null,
                         data: {
+                            _id: find_client.data._id,
                             email: email,
                             name: find_client.data.first_name + ' ' + find_client.data.last_name,
                             document: document,

@@ -674,53 +674,53 @@ async function createInvoicesClients(req, res) {
                         route: route_id,
                     }
                     const create = await models.newDocument('invoices', dataInvoice)
+                    res.json({error: create.error ? create.error : null, data: create.data});
+                    // let new_cliente = result.data
+                    // let msg = 'Hola! Tengo interes en obtener más información sobre las rutas de MTB que ofrecen. ¿Podrían ayudarme?'
+                    // linkWhatsApp = 'https://api.whatsapp.com/send?phone=573054499987&text=' + msg
+                    // const correoHTML = `
+                    // <!DOCTYPE html>
+                    // <html lang="es">
+                    // <head>
+                    //   <meta charset="UTF-8">
+                    //   <title>Correo electrónico</title>
+                    // </head>
+                    // <body>
+                    //   <p>¡Hola ${new_cliente.first_name}</p>
+                    //   <p>Nos hemos dado cuenta de que estás a un paso de completar tu inscripción para la emocionante ruta de ciclomontañismo con Espíritu de Montaña. ¡No dejes pasar la oportunidad de vivir esta increíble experiencia!</p>
+                    //   <p>Imagínate pedaleando a través de los majestuosos paisajes de Antioquia, compartiendo historias y risas con compañeros aventureros. No permitas que se escape esta oportunidad de coleccionar kilómetros y recuerdos inolvidables.</p>
+                    //   <p>Haz clic aquí <a href="${linkWhatsApp}">Enlace de Pago</a> para completar tu inscripción y comenzar a contar los días para tu próxima gran aventura.</p>
+                    //   <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.</p>
+                    //   <p>¡Te esperamos!</p>
+                    //   <p>Saludos,</p>
+                    //   <p>Equipo de Espíritu de Montaña</p>
+                    // </body>
+                    // </html>
+                    // `;
+                    // const data = {
+                    //     from: 'Acme <onboarding@resend.dev>',
+                    //     to: ['feliperroman1702@gmail.com'],
+                    //     subject: 'Tu Aventura en Espíritu de Montaña te Espera',
+                    //     html: correoHTML
+                    // };
 
-                    let new_cliente = result.data
-                    let msg = 'Hola! Tengo interes en obtener más información sobre las rutas de MTB que ofrecen. ¿Podrían ayudarme?'
-                    linkWhatsApp = 'https://api.whatsapp.com/send?phone=573054499987&text=' + msg
-                    const correoHTML = `
-                    <!DOCTYPE html>
-                    <html lang="es">
-                    <head>
-                      <meta charset="UTF-8">
-                      <title>Correo electrónico</title>
-                    </head>
-                    <body>
-                      <p>¡Hola ${new_cliente.first_name}</p>
-                      <p>Nos hemos dado cuenta de que estás a un paso de completar tu inscripción para la emocionante ruta de ciclomontañismo con Espíritu de Montaña. ¡No dejes pasar la oportunidad de vivir esta increíble experiencia!</p>
-                      <p>Imagínate pedaleando a través de los majestuosos paisajes de Antioquia, compartiendo historias y risas con compañeros aventureros. No permitas que se escape esta oportunidad de coleccionar kilómetros y recuerdos inolvidables.</p>
-                      <p>Haz clic aquí <a href="${linkWhatsApp}">Enlace de Pago</a> para completar tu inscripción y comenzar a contar los días para tu próxima gran aventura.</p>
-                      <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.</p>
-                      <p>¡Te esperamos!</p>
-                      <p>Saludos,</p>
-                      <p>Equipo de Espíritu de Montaña</p>
-                    </body>
-                    </html>
-                    `;
-                    const data = {
-                        from: 'Acme <onboarding@resend.dev>',
-                        to: ['feliperroman1702@gmail.com'],
-                        subject: 'Tu Aventura en Espíritu de Montaña te Espera',
-                        html: correoHTML
-                    };
+                    // // URL a la que estás haciendo la solicitud POST
+                    // const url = 'https://api.resend.com/emails';
 
-                    // URL a la que estás haciendo la solicitud POST
-                    const url = 'https://api.resend.com/emails';
+                    // const headers = {
+                    //     'Content-Type': 'application/json', // Tipo de contenido que estás enviando
+                    //     'Authorization': 'Bearer re_fU5xW1LH_MYKBR8n2ScYxz8iMU8aTtSV6', // Ejemplo de encabezado de autorización
+                    //     // ... otros encabezados que necesites agregar
+                    // };
 
-                    const headers = {
-                        'Content-Type': 'application/json', // Tipo de contenido que estás enviando
-                        'Authorization': 'Bearer re_fU5xW1LH_MYKBR8n2ScYxz8iMU8aTtSV6', // Ejemplo de encabezado de autorización
-                        // ... otros encabezados que necesites agregar
-                    };
-
-                    // Realizar la petición POST usando Axios
-                    axios.post(url, data, { headers })
-                        .then(response => {
-                            console.log('Respuesta:', response.data); // Hacer algo con la respuesta
-                        })
-                        .catch(error => {
-                            console.error('Error:', error); // Manejar cualquier error que pueda ocurrir durante la solicitud
-                        });
+                    // // Realizar la petición POST usando Axios
+                    // axios.post(url, data, { headers })
+                    //     .then(response => {
+                    //         console.log('Respuesta:', response.data); // Hacer algo con la respuesta
+                    //     })
+                    //     .catch(error => {
+                    //         console.error('Error:', error); // Manejar cualquier error que pueda ocurrir durante la solicitud
+                    //     });
                 }
             }
         }
@@ -729,6 +729,28 @@ async function createInvoicesClients(req, res) {
         res.json({
             error: true,
             message: 'Ha ocurrido un error en la función createInvoiceClient backend'
+        })
+    }
+}
+
+async function updateInvoicesClients(req, res){
+    try {
+        const body = req.body
+        if (!body) {
+            res.json({
+                error: true,
+                message: 'No existe body en el request'
+            });
+        } else {
+            const { _id} = body
+            const updateinvoice = await models.findOneAndUpdate('invoices', {_id: _id}, {paid: true}, {new: true})
+            res.json(updateinvoice)
+        }
+    } catch (error) {
+        console.log("updateInvoicesClients ~ error:", error)
+        res.json({
+            error: true,
+            message: 'Ha ocurrido un error en la función updateInvoicesClients backend'
         })
     }
 }
@@ -772,6 +794,7 @@ module.exports = {
         getClient,
         bookingRoute,
         prebookingRoute,
-        createInvoicesClients
+        createInvoicesClients,
+        updateInvoicesClients
     }
 }
