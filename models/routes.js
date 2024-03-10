@@ -12,7 +12,7 @@ const routesSchema = mongoose.Schema({
     images: Array,
     level: String,
     price: Number,
-    status: String,
+    status: {type:String, default: 'active'},
     quota_status: String,
     date_end: Date,
     packages: Array,

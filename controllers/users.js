@@ -86,6 +86,85 @@ async function createUser(req, res) {
         });
     }
 }
+async function getAllRoutes(req, res) {
+    try {
+        const admin = req.user.id
+        if (admin) {
+            let result_admin = await models.findOne('users', { _id: admin, status: 'active', deleted: false });
+            if (result_admin.error) {
+                res.json({
+                    error: true,
+                    data: null,
+                    message: 'Ha ocurrido un error al consultar el admin'
+                });
+            } else if (!result_admin.error && !result_admin.data) {
+                res.json({
+                    error: null,
+                    data: null,
+                    message: 'El admin con ese id no existe o está inhabilitado'
+                });
+            } else {
+                const result_routes = await models.findLean('routes')
+                if (result_routes.error) {
+                    res.json({
+                        error: true,
+                        data: null,
+                        message: 'Ha ocurrido un error al consultar las rutas'
+                    });
+                } else if (!result_routes.error && result_routes.data?.length === 0) {
+                    res.json({
+                        error: null,
+                        data: null,
+                        message: 'No se encontraron rutas'
+                    });
+                } else {
+                    res.json({
+                        error: null,
+                        data: statusRoute(result_routes.data),
+                        message: 'Rutas encontradas correctamente'
+                    });
+                }
+            }
+        }
+    } catch (error) {
+        console.log(" getAllRoutes ~ error:", error);
+        res.json({
+            error: true,
+            data: null,
+            err: error,
+            message: 'Ha ocurrido un error en la función getAllRoutes'
+        });
+    }
+}
+function statusRoute(routes) {
+    const estados = {
+        CasiLlena: 'Casi llena',
+        Disponible: 'Disponible',
+        Sincupos: 'Sin cupos'
+    };
+
+    const routesStatus = routes.map((route) => {
+        const ocupacion = route.assistants.length;
+        const maximo = route.quantity_persons;
+        let status = estados.Disponible;
+        if (ocupacion == maximo) {
+            status = estados.Sincupos;
+        } else if (ocupacion === 0) {
+            status = estados.Disponible;
+        }
+        else if (ocupacion > 0.5 * maximo) {
+            status = estados.CasiLlena;
+        }
+
+        return {
+            ...route,
+            quota_status: status
+        };
+    });
+
+    return routesStatus.filter((route) => route.quota_status !== 'Sin cupos');
+}
+
 
 async function getUsers(req, res) {
     try {
@@ -844,7 +923,8 @@ module.exports = {
     },
     get: {
         getUsers,
-        getUser
+        getUser,
+        getAllRoutes
     },
     post: {
         createUser,

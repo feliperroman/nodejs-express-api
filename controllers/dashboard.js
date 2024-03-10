@@ -12,7 +12,7 @@ const models = require("../helpers/models");
 
 async function getRecentRoutes(req, res) {
     try {
-        const result_routes = await models.findLean('routes')
+        const result_routes = await models.findLean('routes', { status: 'active', "deleted": { $ne: true }})
         if (result_routes.error) {
             res.json({
                 error: true,

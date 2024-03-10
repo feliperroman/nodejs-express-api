@@ -37,7 +37,7 @@ async function createNewRoute(req, res) {
                 });
             } else {
                 let images = []
-            
+
                 let data = {
                     title: body.title ? body.title : null,
                     description: body.description ? body.description : null,
@@ -54,7 +54,6 @@ async function createNewRoute(req, res) {
                     includes: body.includes ? body.includes : [],
                     quota_status: "Disponible",
                     preview_description: body.preview_description ? body.preview_description : null,
-                    category: body.category ? body.category : null,
                     prebook: body.prebook ? body.prebook : false,
                     percentage_prebook: body.percentage_prebook ? body.percentage_prebook : 0,
                     category: body.category ? body.category : null
@@ -90,7 +89,7 @@ async function createNewRoute(req, res) {
 
 async function getAllPrebook(req, res) {
     try {
-        const result_routes = await models.findLean('routes',{prebook: true})
+        const result_routes = await models.findLean('routes', { prebook: true })
         if (result_routes.error) {
             res.json({
                 error: true,
@@ -122,7 +121,7 @@ async function getAllPrebook(req, res) {
 }
 async function getAllRoutes(req, res) {
     try {
-        const result_routes = await models.findLean('routes')
+        const result_routes = await models.findLean('routes', { status: 'active', "deleted": { $ne: true }})
         if (result_routes.error) {
             res.json({
                 error: true,
@@ -155,32 +154,32 @@ async function getAllRoutes(req, res) {
 
 function statusRoute(routes) {
     const estados = {
-      CasiLlena: 'Casi llena',
-      Disponible: 'Disponible',
-      Sincupos: 'Sin cupos'
+        CasiLlena: 'Casi llena',
+        Disponible: 'Disponible',
+        Sincupos: 'Sin cupos'
     };
-  
+
     const routesStatus = routes.map((route) => {
-      const ocupacion = route.assistants.length;
-      const maximo = route.quantity_persons;
-      let status = estados.Disponible;
-      if (ocupacion == maximo) {
-        status = estados.Sincupos;
-      }else if (ocupacion === 0) {
-        status = estados.Disponible;
-      } 
-      else if (ocupacion > 0.5 * maximo) {
-        status = estados.CasiLlena;
-      }
-      
-      return {
-        ...route,
-        quota_status: status
-      };
+        const ocupacion = route.assistants.length;
+        const maximo = route.quantity_persons;
+        let status = estados.Disponible;
+        if (ocupacion == maximo) {
+            status = estados.Sincupos;
+        } else if (ocupacion === 0) {
+            status = estados.Disponible;
+        }
+        else if (ocupacion > 0.5 * maximo) {
+            status = estados.CasiLlena;
+        }
+
+        return {
+            ...route,
+            quota_status: status
+        };
     });
-  
+
     return routesStatus.filter((route) => route.quota_status !== 'Sin cupos');
-  }
+}
 
 async function getRoute(req, res) {
     try {
@@ -259,11 +258,13 @@ async function updateRoute(req, res) {
                         quantity_persons: body.quantity_persons ? body.quantity_persons : old_route.quantity_persons,
                         images: body.images ? body.images : old_route.images,
                         level: body.level ? body.level : old_route.level,
-                        price: body.price ? body.price : old_route.price,
+                        packages: body.packages ? body.packages : old_route.packages,
                         status: body.status ? body.status : old_route.status,
                         date_end: body.date_end ? body.date_end : old_route.date_end,
                         includes: body.includes ? body.includes : old_route.includes,
                         preview_description: body.preview_description ? body.preview_description : old_route.preview_description,
+                        prebook: body.prebook ? body.prebook : false,
+                        percentage_prebook: body.percentage_prebook ? body.percentage_prebook : 0,
                         category: body.category ? body.category : null
                     }
                     let update_route = await models.findOneAndUpdate('routes', { _id: route }, data_update, { new: true })

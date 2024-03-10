@@ -38,8 +38,8 @@ async function createClient(req, res) {
                     email: body.email ? body.email : null,
                     rh: body.rh ? body.rh : null,
                     eps: body.eps ? body.eps.name : null,
-                    vegan: body.vegan ? body.eps.vegan : null,
-                    vegan_observations: body.vegan_observations ? body.eps.vegan_observations : null,
+                    vegan: body.vegan ? body.vegan : null,
+                    vegan_observations: body.vegan_observations ? body.vegan_observations : null,
                     health_observations: body.health_observations ? body.health_observations : null,
                     status: 'active',
                 }
@@ -276,8 +276,8 @@ async function updateClient(req, res) {
                         email: body.email ? body.email : old_client.email,
                         rh: body.rh ? body.rh : old_client.rh,
                         eps: body.eps ? body.eps : old_client.eps,
-                        vegan: body.vegan ? body.eps.vegan : null,
-                    vegan_observations: body.vegan_observations ? body.eps.vegan_observations : null,
+                        vegan: body.vegan ? body.vegan : null,
+                    vegan_observations: body.vegan_observations ? body.vegan_observations : null,
                         status: body.status ? body.status : old_client.status,
                         health_observations: body.health_observations ? body.health_observations : old_client.health_observations,
                     }
@@ -403,8 +403,8 @@ async function bookingRoute(req, res) {
                             email: new_client.email ? new_client.email : null,
                             rh: new_client.rh ? new_client.rh : null,
                             eps: new_client.eps ? new_client.eps : null,
-                            vegan: body.vegan ? body.eps.vegan : null,
-                    vegan_observations: body.vegan_observations ? body.eps.vegan_observations : null,
+                            vegan: body.vegan ? body.vegan : null,
+                    vegan_observations: body.vegan_observations ? body.vegan_observations : null,
                             health_observations: new_client.health_observations ? new_client.health_observations : null,
                             status: 'active',
                         }
@@ -575,8 +575,8 @@ async function prebookingRoute(req, res) {
                                 email: new_client.email ? new_client.email : null,
                                 rh: new_client.rh ? new_client.rh : null,
                                 eps: new_client.eps ? new_client.eps.name : null,
-                                vegan: body.vegan ? body.eps.vegan : null,
-                    vegan_observations: body.vegan_observations ? body.eps.vegan_observations : null,
+                                vegan: body.vegan ? body.vegan : null,
+                    vegan_observations: body.vegan_observations ? body.vegan_observations : null,
                                 health_observations: new_client.health_observations ? new_client.health_observations : null,
                                 status: 'active',
                             }

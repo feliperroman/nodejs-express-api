@@ -21,6 +21,7 @@ const {
 
 app.get('/get', isValidToken, usersController.get.getUsers);
 app.get('/getAll', isValidToken, usersController.get.getUsers);
+app.get('/getAllRoutes', isValidToken, usersController.get.getAllRoutes);
 app.post('/create',  usersController.post.createUser);
 app.post('/update', isValidToken, usersController.post.updateUser);
 app.post('/delete', isValidToken, usersController.post.deleteUser); 
