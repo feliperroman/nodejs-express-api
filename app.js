@@ -59,12 +59,10 @@ app.use(session({
     saveUninitialized: true,
     store: MongoStore.create({ mongoUrl: process.env.NODE_ENV === 'production' ? process.env.DATA_BASE_PROD : process.env.DATA_BASE }),
 }));
-const corsOptions = {
-    origin: 'https://www.espiritudemontana.com',
-    methods: ['POST', 'GET', 'PUT', 'DELETE']
-  };
-  
-  app.use(cors(corsOptions));
+app.use(cors({
+    methods: ['POST', 'GET', 'PUT', 'DELETE'],
+    origin: '*'
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
