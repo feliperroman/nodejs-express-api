@@ -9,6 +9,9 @@ const commentsSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    status: {
+        type: String, default: 'active'
+    }
 });
 
 module.exports = mongoose.model('Comments', commentsSchema);

@@ -32,6 +32,16 @@ app.post('/images',upload.any('images[]'), isValidToken, usersController.post.ad
 app.post('/createComment', isValidToken, usersController.post.createComment);   
 app.post('/imgComment',upload.any('image'), isValidToken, usersController.post.addImageComment); 
 app.post('/video', isValidToken, usersController.post.createVideo); 
+app.get('/comments',isValidToken, usersController.get.getComments);
+app.post('/commentUpdate',isValidToken, usersController.post.updateComment);
+app.get('/videos',isValidToken, usersController.get.getVideos); 
+app.post('/videosUpdate',isValidToken, usersController.post.videosUpdate);
+app.get('/getGallery',isValidToken, usersController.get.getAllGallery);
+app.post('/deleteImg',isValidToken, usersController.post.deleteImg);
+
+
+
+
  
 
 

@@ -277,7 +277,7 @@ async function updateClient(req, res) {
                         rh: body.rh ? body.rh : old_client.rh,
                         eps: body.eps ? body.eps : old_client.eps,
                         vegan: body.vegan ? body.vegan : null,
-                    vegan_observations: body.vegan_observations ? body.vegan_observations : null,
+                        vegan_observations: body.vegan_observations ? body.vegan_observations : null,
                         status: body.status ? body.status : old_client.status,
                         health_observations: body.health_observations ? body.health_observations : old_client.health_observations,
                     }
@@ -404,7 +404,7 @@ async function bookingRoute(req, res) {
                             rh: new_client.rh ? new_client.rh : null,
                             eps: new_client.eps ? new_client.eps : null,
                             vegan: body.vegan ? body.vegan : null,
-                    vegan_observations: body.vegan_observations ? body.vegan_observations : null,
+                            vegan_observations: body.vegan_observations ? body.vegan_observations : null,
                             health_observations: new_client.health_observations ? new_client.health_observations : null,
                             status: 'active',
                         }
@@ -427,8 +427,8 @@ async function bookingRoute(req, res) {
             let reservas_exitosas = []
             for (const cliente of all_clients) {
                 //Si existe el cliente con una reserva se aumenta el contador
-                const client_exist = await models.findOne('routes', { _id: route_id , 'assistants.client' : cliente._id })
-                if(!client_exist.data){
+                const client_exist = await models.findOne('routes', { _id: route_id, 'assistants.client': cliente._id })
+                if (!client_exist.data) {
                     const update_prebooked_assistants = await models.findOneAndUpdate('routes', { _id: route_id }, { $addToSet: { "assistants": { client: cliente._id, package: package ? package : {}, is_prebook: false } } }, { new: true })
                     if (update_prebooked_assistants.error) {
                         console.log({
@@ -446,7 +446,7 @@ async function bookingRoute(req, res) {
                         count = count + 1
                         reservas_exitosas.push(cliente)
                     }
-                }else{
+                } else {
                     count = count + 1
                 }
             }
@@ -455,7 +455,7 @@ async function bookingRoute(req, res) {
                     error: null,
                     message: 'Reservas realizadas correctamente',
                 })
-                for(const clie of all_clients){
+                for (const clie of all_clients) {
                     sendEmailBooking(clie.first_name, 'feliperroman1702@gmail.com')
                 }
             } else {
@@ -464,7 +464,7 @@ async function bookingRoute(req, res) {
                     message: 'Solo pudimos reservar ' + reservas_exitosas.length + ' Cupos',
                     cupos: reservas_exitosas
                 })
-                for(const clie of reservas_exitosas){
+                for (const clie of reservas_exitosas) {
                     sendEmailBooking(clie.first_name, 'feliperroman1702@gmail.com')
                 }
             }
@@ -516,8 +516,8 @@ async function sendEmailBooking(name, email) {
 
         const url = 'https://api.resend.com/emails';
         const headers = {
-            'Content-Type': 'application/json', 
-            'Authorization': process.env.RESEND_AUTHORIZATION, 
+            'Content-Type': 'application/json',
+            'Authorization': process.env.RESEND_AUTHORIZATION,
         };
 
         axios.post(url, data, { headers })
@@ -576,7 +576,7 @@ async function prebookingRoute(req, res) {
                                 rh: new_client.rh ? new_client.rh : null,
                                 eps: new_client.eps ? new_client.eps.name : null,
                                 vegan: body.vegan ? body.vegan : null,
-                    vegan_observations: body.vegan_observations ? body.vegan_observations : null,
+                                vegan_observations: body.vegan_observations ? body.vegan_observations : null,
                                 health_observations: new_client.health_observations ? new_client.health_observations : null,
                                 status: 'active',
                             }
@@ -674,7 +674,7 @@ async function createInvoicesClients(req, res) {
                         route: route_id,
                     }
                     const create = await models.newDocument('invoices', dataInvoice)
-                    res.json({error: create.error ? create.error : null, data: create.data});
+                    res.json({ error: create.error ? create.error : null, data: create.data });
                     // let new_cliente = result.data
                     // let msg = 'Hola! Tengo interes en obtener más información sobre las rutas de MTB que ofrecen. ¿Podrían ayudarme?'
                     // linkWhatsApp = 'https://api.whatsapp.com/send?phone=573054499987&text=' + msg
@@ -733,7 +733,7 @@ async function createInvoicesClients(req, res) {
     }
 }
 
-async function updateInvoicesClients(req, res){
+async function updateInvoicesClients(req, res) {
     try {
         const body = req.body
         if (!body) {
@@ -742,8 +742,8 @@ async function updateInvoicesClients(req, res){
                 message: 'No existe body en el request'
             });
         } else {
-            const { _id} = body
-            const updateinvoice = await models.findOneAndUpdate('invoices', {_id: _id}, {paid: true}, {new: true})
+            const { _id } = body
+            const updateinvoice = await models.findOneAndUpdate('invoices', { _id: _id }, { paid: true }, { new: true })
             res.json(updateinvoice)
         }
     } catch (error) {
@@ -757,7 +757,7 @@ async function updateInvoicesClients(req, res){
 
 async function getAllGallery(req, res) {
     try {
-        const get_images = await models.find('gallery')
+        const get_images = await models.find('gallery', { type: 'gallery' })
         if (get_images.data && !get_images.error) {
             res.json({
                 error: null,
@@ -782,10 +782,82 @@ async function getAllGallery(req, res) {
     }
 }
 
+async function getCarousel(req, res) {
+    try {
+        const get_images = await models.find('gallery', { type: 'carousel' })
+        if (get_images.data && !get_images.error) {
+            res.json({
+                error: null,
+                data: get_images.data,
+                message: 'success'
+            })
+        } else {
+            res.json({
+                error: true,
+                err: get_images.error,
+                data: get_images.data,
+                message: 'No hay imagenes'
+            })
+        }
+    } catch (error) {
+        console.log("getCarousel ~ error:", error);
+        res.json({
+            error: true,
+            message: 'Ha ocurrido un error en la función getCarousel',
+            err: error
+        });
+    }
+}
+
+async function getImgExp(req, res) {
+    try {
+        const get_images = await models.find('gallery', { $or: [{ "type": "grupales" }, { "type": "empresas" }, { "type": "extranjeros" }] })
+        if (get_images.data && !get_images.error) {
+
+            const empresas = get_images.data.filter(image => image.type === 'empresas')
+            const extranjeros = get_images.data.filter(image => image.type === 'extranjeros')
+            const grupales = get_images.data.filter(image => image.type === 'grupales')
+
+            const filteredImages = {
+                empresas: empresas?.length > 0 ? empresas[0].image_url : null,
+                extranjeros: extranjeros?.length > 0 ? extranjeros[0].image_url : null,
+                grupales: grupales?.length > 0 ? grupales[0].image_url : null,
+            };
+
+            res.json({
+                error: null,
+                data: filteredImages,
+                message: 'success'
+            })
+        } else {
+
+            res.json({
+                error: true,
+                err: get_images.error,
+                data: get_images.data,
+                message: 'No hay imagenes'
+            })
+        }
+    } catch (error) {
+        console.log("getCarousel ~ error:", error);
+        res.json({
+            error: true,
+            message: 'Ha ocurrido un error en la función getCarousel',
+            err: error
+        });
+    }
+}
+
+
+
+
 module.exports = {
     get: {
         getAllClients,
-        getAllGallery
+        getAllGallery,
+        getCarousel,
+        getImgExp
+        // getComments
     },
     post: {
         createClient,

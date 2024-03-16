@@ -9,5 +9,6 @@ transport.js
 
 .uploads/
 /uploads/
+public/files
 .temp/
 /temp/

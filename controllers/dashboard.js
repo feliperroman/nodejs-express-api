@@ -290,7 +290,7 @@ async function validateClient(req, res) {
 
 async function getAllComments(req, res) {
     try {
-        const find_comments = await models.find('comments')
+        const find_comments = await models.find('comments',{status: 'active'})
         if (find_comments.error) {
             res.json({
                 error: true,
@@ -322,7 +322,7 @@ async function getAllComments(req, res) {
 
 async function getVideos(req, res) {
     try {
-        const get_videos = await models.find('videos')
+        const get_videos = await models.find('videos', {status: 'active'})
         if (get_videos.error) {
             res.json({
                 error: true,

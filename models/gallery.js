@@ -6,6 +6,10 @@ const invoicesSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    type: {
+        type: String,
+        default: 'gallery'
+    },
 });
 
 module.exports = mongoose.model('Gallery', invoicesSchema);

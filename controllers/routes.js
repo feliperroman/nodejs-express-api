@@ -374,7 +374,7 @@ async function addImagesRoute(req, res) {
                     all_images.push(add_pic['images[]'])
                 }
                 if (all_images.length === images.length) {
-                    const update_route = await models.findOneAndUpdate('routes', { _id: body.id_route }, { images: all_images }, { new: true })
+                    const update_route = await models.findOneAndUpdate('routes', { _id: body.id_route }, { $push: { images: { $each: all_images } } }, { new: true })
                     if (update_route.error) {
                         res.json({
                             error: true,

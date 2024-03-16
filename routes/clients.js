@@ -27,6 +27,11 @@ app.post('/prebookRoute',  clientsController.post.prebookingRoute);
 app.post('/createInvoice',  clientsController.post.createInvoicesClients);
 app.post('/updateInvoice',  clientsController.post.updateInvoicesClients);
 app.get('/getGallery', clientsController.get.getAllGallery); 
+app.get('/getCarousel', clientsController.get.getCarousel); 
+app.get('/getImgExp', clientsController.get.getImgExp); 
+
+
+
 
 
 

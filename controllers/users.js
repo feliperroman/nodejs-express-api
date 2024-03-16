@@ -695,6 +695,7 @@ async function addImagesGallery(req, res) {
     try {
         const admin = req.user.id
         const images = req.files
+        const type = req.body.type
         if (!admin || !images) {
             res.json({
                 error: true,
@@ -715,21 +716,17 @@ async function addImagesGallery(req, res) {
                     message: 'El admin con ese id no existe o está inhabilitado'
                 });
             } else {
-                let all_images = []
-                for (const image of images) {
-                    let add_pic = await utils.uploadGallery(image, "gallery_");
-                    all_images.push({ image_url: add_pic['images[]'] });
-                }
-                if (all_images.length === images.length) {
-                    for (const img of all_images) { }
-                    const insert = await models.insertMany('gallery', all_images)
-                    if (insert.error) {
+                if (type !== null && type !== 'Carousel' && type !== 'Galeria' && type !== 'Galeria') {
+                    const imguup = images[0]
+                    let add_pic = await utils.uploadGallery(imguup, "gallery_");
+                    let updateimg = await models.findOneAndUpdate('gallery', { type: type }, { image_url: add_pic['images[]'] })
+                    if (updateimg.error) {
                         res.json({
                             error: true,
-                            err: insert.error,
+                            err: updateimg.error,
                             message: 'Ha ocurrido un error al crear imagenes'
                         })
-                    } else if (!insert.error && !insert.data) {
+                    } else if (!updateimg.error && !updateimg.data) {
                         res.json({
                             erro: null,
                             data: null,
@@ -738,11 +735,44 @@ async function addImagesGallery(req, res) {
                     } else {
                         res.json({
                             error: null,
-                            data: insert.data,
-                            message: 'Imagenes creadas'
+                            data: updateimg.data,
+                            message: 'Imagene actualizada'
                         })
                     }
+                } else {
+                    let all_images = []
+                    for (const image of images) {
+                        let add_pic = await utils.uploadGallery(image, "gallery_");
+                        all_images.push({ image_url: add_pic['images[]'], type: type === 'Carousel' ? 'carousel' : 'gallery' });
+                    }
+                    if (all_images.length === images.length) {
+
+                        const insert = await models.insertMany('gallery', all_images)
+                        if (insert.error) {
+                            res.json({
+                                error: true,
+                                err: insert.error,
+                                message: 'Ha ocurrido un error al crear imagenes'
+                            })
+                        } else if (!insert.error && !insert.data) {
+                            res.json({
+                                erro: null,
+                                data: null,
+                                message: 'No existe la coleccion gallery'
+                            })
+                        } else {
+                            res.json({
+                                error: null,
+                                data: insert.data,
+                                message: 'Imagenes creadas'
+                            })
+
+                        }
+
+
+                    }
                 }
+
             }
         }
     } catch (error) {
@@ -917,6 +947,293 @@ async function createVideo(req, res) {
     }
 }
 
+async function getComments(req, res) {
+    try {
+        const get_comments = await models.find('comments', { 'status': 'active' })
+        if (get_comments.data && !get_comments.error) {
+            res.json({
+                error: null,
+                data: get_comments.data,
+                message: 'Success'
+            })
+        } else {
+            console.log('Error get comments', get_comments)
+            res.json({
+                error: true,
+                err: get_comments.error,
+                data: get_comments.data,
+                message: 'error'
+            })
+        }
+    } catch (error) {
+        console.log("getAllGallery ~ error:", error);
+        res.json({
+            error: true,
+            message: 'Ha ocurrido un error en la función getAllGallery',
+            err: error
+        });
+    }
+}
+async function videosUpdate(req, res) {
+    try {
+        const admin = req.user.id
+        if (!admin) {
+            res.json({
+                error: true,
+                message: 'No existe token en request'
+            })
+        } else {
+            let result_admin = await models.findOne('users', { _id: admin, status: 'active', deleted: false });
+            if (result_admin.error) {
+                res.json({
+                    error: true,
+                    data: null,
+                    message: 'Ha ocurrido un error al consultar el admin'
+                });
+            } else if (!result_admin.error && !result_admin.data) {
+                res.json({
+                    error: null,
+                    data: null,
+                    message: 'El admin con ese id no existe o está inhabilitado'
+                });
+            } else {
+                const { link, status } = req?.body
+                if (!link || !status) {
+                    res.json({
+                        error: true,
+                        message: 'No existe name o comment en body'
+                    })
+                } else {
+                    const create_comment = await models.findOneAndUpdate('videos', { _id: req.body._id }, { link: link, status: status ? status : 'active' }, { new: true })
+                    if (create_comment.error) {
+                        res.json({
+                            error: true,
+                            err: create_comment.error,
+                            message: 'Ha ocurrido un error al actualizar el video'
+                        })
+                    } else {
+                        res.json({
+                            error: null,
+                            message: 'Video actualizado',
+                            data: create_comment.data
+                        })
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        console.log("updateVideo~ error:", error)
+        res.json({
+            error: true,
+            err: error,
+            message: 'Ha ocurrido un error en la función updateComment'
+        });
+    }
+}
+
+
+async function updateComment(req, res) {
+    try {
+        const admin = req.user.id
+        if (!admin) {
+            res.json({
+                error: true,
+                message: 'No existe token en request'
+            })
+        } else {
+            let result_admin = await models.findOne('users', { _id: admin, status: 'active', deleted: false });
+            if (result_admin.error) {
+                res.json({
+                    error: true,
+                    data: null,
+                    message: 'Ha ocurrido un error al consultar el admin'
+                });
+            } else if (!result_admin.error && !result_admin.data) {
+                res.json({
+                    error: null,
+                    data: null,
+                    message: 'El admin con ese id no existe o está inhabilitado'
+                });
+            } else {
+                const { name, comment, status } = req?.body
+                if (!name || !comment) {
+                    res.json({
+                        error: true,
+                        message: 'No existe name o comment en body'
+                    })
+                } else {
+                    const create_comment = await models.findOneAndUpdate('comments', { _id: req.body._id }, { name: name, comment: comment, status: status ? status : 'active' }, { new: true })
+                    if (create_comment.error) {
+                        res.json({
+                            error: true,
+                            err: create_comment.error,
+                            message: 'Ha ocurrido un error al actualizar el comentario'
+                        })
+                    } else {
+                        res.json({
+                            error: null,
+                            message: 'Comentario actualizado',
+                            data: create_comment.data
+                        })
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        console.log("updateComment ~ error:", error)
+        res.json({
+            error: true,
+            err: error,
+            message: 'Ha ocurrido un error en la función updateComment'
+        });
+    }
+}
+
+async function getVideos(req, res) {
+    try {
+        const get_videos = await models.find('videos', { status: 'active' })
+        if (get_videos.error) {
+            res.json({
+                error: true,
+                err: get_videos.error,
+                message: 'Ha ocurrido un error al consultar los videos'
+            });
+        } else if (!get_videos.data && !get_videos.error) {
+            res.json({
+                error: null,
+                data: null,
+                message: 'No existen videos guardados'
+            });
+        } else {
+            res.json({
+                error: null,
+                data: get_videos.data,
+                message: 'Videos encontrados'
+            });
+        }
+    } catch (error) {
+        console.log("getVideos ~ error:", error);
+        res.json({
+            error: true,
+            err: error,
+            message: 'Ha ocurrido un error en la función getVideos'
+        });
+    }
+}
+
+async function updateVideos(req, res) {
+    try {
+        const admin = req.user.id
+        if (!admin) {
+            res.json({
+                error: true,
+                message: 'No existe token en request'
+            })
+        } else {
+            let result_admin = await models.findOne('users', { _id: admin, status: 'active', deleted: false });
+            if (result_admin.error) {
+                res.json({
+                    error: true,
+                    data: null,
+                    message: 'Ha ocurrido un error al consultar el admin'
+                });
+            } else if (!result_admin.error && !result_admin.data) {
+                res.json({
+                    error: null,
+                    data: null,
+                    message: 'El admin con ese id no existe o está inhabilitado'
+                });
+            } else {
+                const { link, status } = req?.body
+                if (!link || !status) {
+                    res.json({
+                        error: true,
+                        message: 'No existe name o comment en body'
+                    })
+                } else {
+                    const create_comment = await models.findOneAndUpdate('videos', { _id: req.body._id }, { link: link, status: status ? status : 'active' }, { new: true })
+                    if (create_comment.error) {
+                        res.json({
+                            error: true,
+                            err: create_comment.error,
+                            message: 'Ha ocurrido un error al actualizar el video'
+                        })
+                    } else {
+                        res.json({
+                            error: null,
+                            message: 'Video actualizado',
+                            data: create_comment.data
+                        })
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        console.log("updateVideos ~ error:", error);
+        res.json({
+            error: true,
+            err: error,
+            message: 'Ha ocurrido un error en la función updateVideos'
+        });
+    }
+}
+
+async function getAllGallery(req, res) {
+    try {
+        const get_images = await models.find('gallery')
+        if (get_images.data && !get_images.error) {
+            res.json({
+                error: null,
+                data: get_images.data,
+                message: 'Success'
+            })
+        } else {
+            res.json({
+                error: true,
+                err: get_images.error,
+                data: get_images.data,
+                message: 'Success'
+            })
+        }
+    } catch (error) {
+        console.log("getAllGallery ~ error:", error);
+        res.json({
+            error: true,
+            message: 'Ha ocurrido un error en la función getAllGallery',
+            err: error
+        });
+    }
+}
+
+async function deleteImg(req, res) {
+    try {
+        const get_images = await models.remove('gallery', { _id: req.body.img })
+        if (get_images.data && !get_images.error) {
+            res.json({
+                error: null,
+                data: get_images.data,
+                message: 'Success'
+            })
+        } else {
+            res.json({
+                error: true,
+                err: get_images.error,
+                data: get_images.data,
+                message: 'Imagen eliminada'
+            })
+        }
+    } catch (error) {
+        console.log("🚀 ~ deleteImg ~ error:", error)
+        res.json({
+            error: true,
+            message: 'Ha ocurrido un error en la función deleteImg',
+            err: error
+        });
+    }
+}
+
+
+
 module.exports = {
     render: {
 
@@ -924,7 +1241,10 @@ module.exports = {
     get: {
         getUsers,
         getUser,
-        getAllRoutes
+        getAllRoutes,
+        getComments,
+        getVideos,
+        getAllGallery
     },
     post: {
         createUser,
@@ -936,6 +1256,10 @@ module.exports = {
         addImagesGallery,
         createComment,
         addImageComment,
-        createVideo
+        createVideo,
+        updateComment,
+        updateVideos,
+        videosUpdate,
+        deleteImg
     },
 };
