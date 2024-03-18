@@ -864,6 +864,7 @@ async function addImageComment(req, res) {
                 });
             } else {
                 let add_pic = await utils.uploadGallery(image[0], "comment_");
+                console.log("🚀 ~ addImageComment ~ add_pic:", add_pic)
                 const insert = await models.findOneAndUpdate('comments', { _id: body._id }, { image_url: add_pic.image })
                 if (insert.error) {
                     res.json({
