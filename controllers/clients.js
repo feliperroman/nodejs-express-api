@@ -456,7 +456,7 @@ async function bookingRoute(req, res) {
                     message: 'Reservas realizadas correctamente',
                 })
                 for (const clie of all_clients) {
-                    sendEmailBooking(clie.first_name, 'feliperroman1702@gmail.com')
+                    sendEmailBooking(clie.first_name, clie.email)
                 }
             } else {
                 res.json({
@@ -465,7 +465,7 @@ async function bookingRoute(req, res) {
                     cupos: reservas_exitosas
                 })
                 for (const clie of reservas_exitosas) {
-                    sendEmailBooking(clie.first_name, 'feliperroman1702@gmail.com')
+                    sendEmailBooking(clie.first_name, clie.email)
                 }
             }
         }
@@ -494,11 +494,35 @@ async function sendEmailBooking(name, email) {
 <body>
   <p>¡Hola ${name}!</p>
   <p>¡Felicidades y bienvenido a esta gran familia de Espíritu de Montaña! Estamos encantados de que hayas elegido unirte a nosotros en esta emocionante ruta de ciclomontañismo. Te aseguramos una gran experiencia, llena de paisajes impresionantes, desafíos gratificantes y grandes compañeros de ruta.</p>
-  <p>Antes de comenzar, aquí tienes algunas recomendaciones para asegurar que tu aventura sea tan segura como emocionante:</p>
+  <h2>Consejos para tu próximo evento ciclista</h2>
   <ul>
-    <li><strong>Equipo Adecuado</strong>: Asegúrate de llevar ropa cómoda y adecuada para realizar ciclismo de montaña y obvio, el casco es indispensable!</li>
-    <li><strong>Verifica tu Bici</strong>: Antes de la ruta, has una revisión previa de tu bicicleta, es esencial para evitar inconvenientes técnicos. Lleva contigo un kit básico de repuestos: Neumático extra, palancas, juego para parchar, inflador, juego de llaves y pines de cadena.</li>
-    <li><strong>Protección Solar, mucha energía y ganas para la ruta.</strong></li>
+  <li>
+  <strong>Revisa tu Bici:</strong> Revisa el estado de tu bicicleta como llantas, cadena, suspensión, lubricación y pastillas de frenos.
+</li>
+<li>
+  <strong>Indumentaria adecuada:</strong> Recuerda el uso del casco de manera obligatoria, guantes, buen protector solar, gafas para el sol si lo deseas y ropa adecuada para el clima al cual nos dirigimos.
+</li>
+<li>
+  <strong>Hidratación y nutrición:</strong> En ruta, lleva contigo un bolso o compartimiento en la bici donde puedas llevar suficiente agua y snacks energéticos para mantener tus niveles de energía durante el evento.
+</li>
+<li>
+  <strong>Conocimiento de la ruta:</strong> Familiarízate con la ruta del evento que vamos a visitar, puedes buscar información del pueblo y atractivos turísticos, de seguro vas a llegar con una visión más amplia y disfrutarás más de la zona y el recorrido.
+</li>
+<li>
+  <strong>Entrenamiento previo:</strong> Asegúrate de estar físicamente preparado para que tengas una gran experiencia, entrena días antes de la ruta para que tus piernas y pulmones respondan de la mejor manera.
+</li>
+<li>
+  <strong>Seguridad:</strong> Si deseas, puedes llevar un kit de primeros auxilios básico, sin embargo, el equipo de Espíritu de Montaña estará bien equipado en caso de una emergencia.
+</li>
+<li>
+  <strong>Respeto por la naturaleza:</strong> Recuerda que la montaña nos da la bienvenida, procura no dejar basura, respetar la vida silvestre y flora del lugar, y eso sí, toma muchas fotos y agradécele el dejarnos visitarla.
+</li>
+<li>
+  <strong>Llegada temprana:</strong> Llega temprano al evento para tener tiempo de comer algo, calentar y prepararte para rodar.
+</li>
+<li>
+  <strong>Actitud positiva:</strong> ¡Disfruta del evento, diviértete y muévete con mucho Espíritu!
+</li>
   </ul>
   <p>De resto, nosotros nos ocupamos de todo ;)</p>
   <p>Recuerda, estamos aquí para apoyarte en todo lo que necesites.</p>

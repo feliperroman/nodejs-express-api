@@ -373,7 +373,6 @@ module.exports = {
                 }).then(async response => {
                     const data_db = response.data.data
                     const update_wallet = await models.findOneAndUpdate('wallet_clients', { client_id: client_id, client_document: document }, { $push: { operations_wompi: data_db } }, { new: true, upsert: true })
-                    console.log("🚀 ~ update_wallet:", update_wallet)
                     resolve({ ...response.data, track_ids: { operation_id: update_wallet.data, } });
                 }).catch(error => {
                     resolve({
