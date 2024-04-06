@@ -23,5 +23,6 @@ app.post('/createPrebookedOld',  dashboardController.post.createPreBookedOldUser
 app.post('/validateClient',  dashboardController.post.validateClient);
 app.get('/comments', dashboardController.get.getAllComments); 
 app.get('/videos', dashboardController.get.getVideos); 
+app.get('/cms', dashboardController.get.cms)
 
 module.exports = app;

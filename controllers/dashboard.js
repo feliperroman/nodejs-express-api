@@ -6,13 +6,14 @@
 // HELPERS
 // =============================================================================
 const models = require("../helpers/models");
+const mongoose = require('mongoose')
 // =============================================================================
 // REST FUNCTIONS
 // =============================================================================
 
 async function getRecentRoutes(req, res) {
     try {
-        const result_routes = await models.findLean('routes', { status: 'active', "deleted": { $ne: true }})
+        const result_routes = await models.findLean('routes', { status: 'active', "deleted": { $ne: true } })
         if (result_routes.error) {
             res.json({
                 error: true,
@@ -290,7 +291,7 @@ async function validateClient(req, res) {
 
 async function getAllComments(req, res) {
     try {
-        const find_comments = await models.find('comments',{status: 'active'})
+        const find_comments = await models.find('comments', { status: 'active' })
         if (find_comments.error) {
             res.json({
                 error: true,
@@ -322,7 +323,7 @@ async function getAllComments(req, res) {
 
 async function getVideos(req, res) {
     try {
-        const get_videos = await models.find('videos', {status: 'active'})
+        const get_videos = await models.find('videos', { status: 'active' })
         if (get_videos.error) {
             res.json({
                 error: true,
@@ -352,13 +353,29 @@ async function getVideos(req, res) {
     }
 }
 
+async function cms(req, res) {
+    try {
+        const collection = mongoose?.connection?.db?.collection('aposDocs');
+        console.log(collection ? 'si cms' : 'no cms')
+        if (collection) {
+            const documentos = await collection.findOne({ _id: 'clunjovdo000lt4z9f41f5qql:en:published' });
+            res.json({ error: documentos ? null : true, data: documentos, message: documentos ? 'Exitoso' : 'error' })
+            console.log(documentos);
+        }
+
+    } catch (error) {
+        console.log("🚀 ~ cms ~ error:", error)
+    }
+}
+
 
 
 module.exports = {
     get: {
         getRecentRoutes,
         getAllComments,
-        getVideos
+        getVideos,
+        cms
     },
     post: {
         createPreBookedNewUser,
