@@ -19,7 +19,7 @@ const {
 // REST FUNCTIONS
 // =============================================================================
 
-app.get('/get',  routesController.get.getRoute);
+app.post('/get',  routesController.get.getRoute);
 app.get('/getAll',  routesController.get.getAllRoutes);
 app.post('/create', isValidToken, routesController.post.createNewRoute);
 app.post('/update', isValidToken, routesController.post.updateRoute);

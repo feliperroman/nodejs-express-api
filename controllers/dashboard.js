@@ -356,13 +356,10 @@ async function getVideos(req, res) {
 async function cms(req, res) {
     try {
         const collection = mongoose?.connection?.db?.collection('aposDocs');
-        console.log(collection ? 'si cms' : 'no cms')
         if (collection) {
             const documentos = await collection.findOne({ _id: 'clunjovdo000lt4z9f41f5qql:en:published' });
             res.json({ error: documentos ? null : true, data: documentos, message: documentos ? 'Exitoso' : 'error' })
-            console.log(documentos);
         }
-
     } catch (error) {
         console.log("🚀 ~ cms ~ error:", error)
     }
