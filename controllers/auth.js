@@ -27,21 +27,21 @@ async function validateLogin(req, res) {
                         err: err,
                         message: 'Token expirado o invalido'
                     });
-                }else{
-                req.user = {
-                    email: decode.user,
-                    tipo: decode.tipo,
-                    id: decode.id
-                }
-                res.status(200).json({
-                    user: {
+                } else {
+                    req.user = {
                         email: decode.user,
-                        type: decode.tipo,
-                    },
-                    token: token,
-                }); 
+                        tipo: decode.tipo,
+                        id: decode.id
+                    }
+                    res.status(200).json({
+                        user: {
+                            email: decode.user,
+                            type: decode.tipo,
+                        },
+                        token: token,
+                    });
                 }
-                
+
             });
         } else {
             res.json(validate_user);
@@ -51,6 +51,8 @@ async function validateLogin(req, res) {
         res.json("error")
     }
 };
+
+// Función asíncrona para crear y enviar el archivo Word
 
 
 module.exports = {

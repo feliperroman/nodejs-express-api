@@ -1,11 +1,13 @@
 // =============================================================================
 // PACKAGES
 // =============================================================================
+const { Document, Packer, Paragraph, TextRun, HeadingLevel, Heading1, Heading2 } = require('docx');
 // =============================================================================
 // HELPERS
 // =============================================================================
 const models = require("../helpers/models");
 const axios = require("axios")
+const resend = require('../services/resend.js')
 // =============================================================================
 // REST FUNCTIONS
 // =============================================================================
@@ -872,6 +874,489 @@ async function getImgExp(req, res) {
     }
 }
 
+async function CreateImgTreatmentFile(req, res) {
+    const { name: nombre, document: cc, email: correoDestino } = req.body
+
+    try {
+        // Crea el documento Word
+        const doc = new Document({
+            sections: [
+                {
+                    properties: {},
+                    children: [
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "AUTORIZACIÓN DE USO DE DERECHOS DE IMAGEN SOBRE FOTOGRAFÍAS\nY FIJACIONES AUDIOVISUALES (VIDEOS) ENTENDIDOS COMO DATOS\nPERSONALES.",
+                                    bold: true,
+                                    size: 24,
+                                }),
+                            ],
+                        }),
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "A través de la aceptación del presente documento, expreso mi libre deseo de\nparticipar en el evento y realizo las siguientes declaraciones:",
+                                }),
+                            ],
+                        }),
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "Acorde a lo establecido por la Ley 1581 de 2012 y el Decreto Reglamentario 1377\nde 2013, demás legislación y jurisprudencia vigente para el tratamiento de la\nimage, video, voz y similares entendidos como dato personal, autorizo de manera\ngratuita, el uso y tratamiento de mi imagen, mi voz y demás datos personales que\nsean fijados en producciones o grabaciones de video, audio, entrevistas, tomas\nfotográficas, o procedimientos que se asimilen a la fotografía y su almacenamiento\ny custodia en medios digitales, en razón de mi participación en el evento dicha\nautorización se regirá bajo los siguientes términos.",
+                                }),
+                            ],
+                        }),
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "PRIMERA – AUTORIZACIÓN: LA PERSONA, mediante el presente documento\nautoriza la utilización de los derechos de imagen sobre fotografías o\nprocedimientos análogos a la fotografía, o producciones Audiovisuales (Videos),\nasí como los derechos patrimoniales de autor (Reproducción, Comunicación\nPública, Transformación y Distribución) y derechos conexos, a ESPIRITU DE\nMONTAÑA SAS para incluirlos en fotografías o procedimientos análogos a la\nfotografía, o producciones Audiovisuales (Videos).",
+                                }),
+                            ],
+                        }),
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "SEGUNDA - OBJETO: Por medio del presente escrito, LA PERSONA, autoriza a\nESPIRITU DE MONTAÑA para que de conformidad con las normas\ninternacionales que sobre Propiedad Intelectual que sean aplicables, así como\nbajo las normas vigentes en Colombia, use los derechos de imagen sobre\nfotografías o procedimientos análogos a la fotografía, o producciones\nAudiovisuales (Videos), así como los derechos de propiedad intelectual y sobre\nDerechos Conexos que le puedan pertenecer para ser utilizados por la empresa",
+                                }),
+                            ],
+                        }),
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "TERCERA- Alcance de la autorización. La presente autorización de uso se otorga\npara ser utilizada en formato o soporte material en ediciones impresas, y se\nextiende a la utilización en medio electrónico, óptico, magnético, en redes (Intranet\ne Internet), mensajes de datos o similares y en general para cualquier medio o\nsoporte conocido o por conocer en el futuro. La publicación podrá efectuarse de\nmanera directa o a través de un tercero que se designe para tal fin.",
+                                }),
+                            ],
+                        }),
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "CUARTA: Ubicación - Los derechos aquí autorizados se dan sin limitación\ngeográfica o territorial alguna.",
+                                }),
+                            ],
+                        }),
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "QUINTA: Exclusividad: La autorización de uso aquí establecida no implica\nexclusividad en favor de ESPIRITU DE MONTAÑA SAS por lo tanto LA PERSONA\nse reserva y conserva el derecho de otorgar directamente, u otorgar a cualquier\ntercero, autorizaciones de uso similares o en los mismos términos aquí acordados.",
+                                }),
+                            ],
+                        }),
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: `En concordancia con las disposiciones anteriores, Yo ${nombre.toUpperCase()}, identificado con C.C. Nº ${cc}, Manifiesto voluntaria y plenamente consciente de las consecuencias legales y jurídicas que el presente escrito conlleva y lo acepto\nprevio a la contratación del servicio.`,
+                                }),
+                            ],
+                        }),
+                    ],
+                },
+            ],
+        });
+
+        // Convierte el documento a un buffer
+        const buffer = await Packer.toBuffer(doc);
+
+        const correoHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Correo de Espíritu de Montaña</title>
+</head>
+<body>
+  <p>¡Hola ${nombre}!</p>
+  <p>Te enviamos tu consentimiento de tratamiento de imagen personal.</p>
+ 
+</body>
+</html>
+`;
+        let resultEmail = await resend.sendFileImagePersonal(correoHTML, buffer, correoDestino)
+
+        res.json(resultEmail)
+
+    } catch (error) {
+        console.log('Error al crear o enviar el documento:', error);
+        res.status(500).send('Error al generar o enviar el documento');
+    }
+}
+
+async function CreateExonerationFile(req, res) {
+    const { name: nombreUsuario, route_name: nombreEvento, email: correoDestino, document: cc } = req.body
+
+    try {
+        // Crea el documento Word
+        const doc = new Document({
+            sections: [
+                {
+                    properties: {},
+                    children: [
+                        // Título del documento
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: `EXONERACIÓN DE RESPONSABILIDAD DEL EVENTO DENOMINADO ${nombreEvento.toUpperCase()} QUIEN EN ADELANTE SE DENOMINARÁ EL EVENTO`,
+                                    bold: true,
+                                    size: 24,
+                                })
+                            ]
+                        }),
+
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+
+                        // Párrafo introductorio
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "A través de la aceptación del presente documento, expreso mi libre deseo de participar en el evento y realizo las siguientes declaraciones:",
+                                })
+                            ]
+                        }),
+
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+
+                        // Lista numerada con anidamiento
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "1. conozco los riesgos y peligros asociados a participar en el evento al cual me inscribo y deseo participar voluntariamente.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 1,
+                                }
+                            }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "1.1 Soy consciente que la práctica de deportes al aire libre conlleva riesgos asociados a la integridad (física, mental, etc. ...) se describirán de manera enunciativa, más no taxativa, más adelante, en consecuencia, acepto y asumo todos los riesgos asociados con mi participación en el evento, incluyendo, pero no limitándolo, a mis propias acciones u omisiones, o de los organizadores, de otros participantes, espectadores, (describir condiciones físicas del clima)",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 2,
+                                }
+                            }
+                        }),
+
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+
+                        // Párrafo con notas (en negrita)
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "REVISAR POLIZA ULTIMO EVENTO PARA MIRAR QUE RIESGOS CUBRE\nAGREGAR A POLIZAS",
+                                    bold: true
+                                })
+                            ]
+                        }),
+
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+
+                        // Lista numerada con anidamiento
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "2. Reconozco y acepto que los riesgos y peligros derivados de la participación en el Evento a participar, los cuales son los siguientes sin implicar que puedan existir riesgos no mencionados: i) Sufrir daños o lesiones, graves o leves, y que pueden causar discapacidad permanente, e incluso la muerte; ii) Hurto de los equipos utilizados, como bicicletas, motocicletas, vehículos automotores, accesorios y equipos utilizados, artículos personales y de tecnología; iii) Falla o avería de la bicicleta en la que me esté movilizando; iv) Al estar realizando actividades al aire libre, existen riesgos derivados de los cambios climáticos, tales como accidentes por lluvias, superficies, terrenos y demás escenarios que se relacionen directa o indirectamente con el clima y demás condiciones naturales que no pueden ser controladas por el prestador del servicio; v) Accidentes que se pueden presentar en sitios remotos, dificultando la asistencia oportuna de primeros auxilios y, vi). Demás riesgos derivados de la realización de la actividad contratada AGREGAR INTOXICACIÓN O ENFERMEDAD GENERAL POR CONSUMO DE ALIMENTOS.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 1,
+                                }
+                            }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "2.1 Entiendo que la descripción de estos riesgos no es completa y que podrían suscitarse riesgos imprevistos o desconocidos, que pueden generar lesiones, enfermedades, e incluso la muerte.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 2,
+                                }
+                            }
+                        }),
+
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+
+                        // Lista numerada
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "3. Declaro que me encuentro en plenas condiciones físicas, fisiológicas, y que estoy entrenado(a) y preparado(a) para participar en el evento, del cual conozco su ruta, exigencia física y necesidad de preparación, asumo expresamente todos los daños, riesgos o resultados que se generen con relación a mi decisión voluntaria de participar.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 1,
+                                }
+                            }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "3.1 Así mismo, me encuentro afiliado al sistema de seguridad social y/o cuento con un seguro médico vigente, para que, en caso de enfermedades o accidentes causados por mi participación en el evento cuente con una cobertura plena para que las mismas sean debidamente atendidas. En consecuencia, exonero y mantengo indemne a ESPIRITU DE MONTAÑA S.A.S, de cualquier reclamación que se relacione con enfermedades o accidentes tanto presentes como futuros, a la participación mía en el evento antes referido.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 2,
+                                }
+                            }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "3.2.  Consecuentemente y, en caso de presentarse un accidente durante el evento, acepto expresamente que se presten los primeros auxilios, entendiendo que el equipo logístico autorizado por ESPIRITU DE MONTAÑA no será responsable por la prestación de servicios de salud que requiera, toda vez que estos servicios son meramente temporales y circunstanciales, que tienen como propósito suministrar los primeros auxilios básicos para buscar disminuir las contingencias o secuelas que se puedan ocasionar a raíz del accidente.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 3,
+                                }
+                            }
+                        }),
+
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+
+                        // Lista numerada
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "4. Reconozco y acepto que el traslado de los vehículos (bicicletas) para desarrollar las actividades no se encuentra amparados por una póliza por tal razón ante la posibilidad de una pérdida o daño ocasionado en el transporte de los vehículos exonero de la responsabilidad a ESPIRITU DE MONTAÑA o quien preste el servicio de transporte del vehículo ante cualquier daño que ocurra durante el mismo.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 1,
+                                }
+                            }
+                        }),
+
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+
+                        // Lista numerada con anidamiento
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "5. Adicionalmente, reconozco que, con la aceptación del presente documento, se derivan las siguientes consecuencias:",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 1,
+                                }
+                            }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "5.1. Exonero de responsabilidad a ESPIRITU DE MONTAÑA S.A.S, a sus colaboradores, dependientes, empleados, clientes y demás representantes de la misma, con respecto a traumatismos, lesiones, o mi deceso.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 2,
+                                }
+                            }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "5.2. Libero de toda responsabilidad y obligación toda reclamación, queja, denuncia o demanda, instaurada por mí o por mis herederos, legatarios o albaceas, que se fundamenten en las lesiones, daños, pérdidas o deceso provenientes de la realización de las actividades derivadas del evento desarrollado por ESPIRITU DE MONTAÑA S.A.S. En consecuencia, declaro que he leído y comprendido el presente acuerdo, y las consecuencias legales que de este se derivan.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 2,
+                                }
+                            }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "5.3 Exonero de responsabilidad a ESPIRITU DE MONTAÑA S.A.S, a sus colaboradores, dependientes, empleados, clientes y demás representantes de la misma, con respecto a hurtos, perdidas, daños o afectaciones a bienes materiales que puedan surgir, antes, durante y después del desarrollo del evento.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 2,
+                                }
+                            }
+                        }),
+
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+
+                        // Lista numerada
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "6. conozco que me encuentro amparada por la póliza de seguro BRINDADA POR ESPIRITU DE MONTAÑA DENTRO DEL EVENTO ACTUAL, la cual de manera voluntaria acepté y me acogí a los montos establecidos en la misma, sin que los valores adicionales causados sean responsabilidad de ESPIRITU DE MONTAÑA S.A.S ni del asegurador.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 1,
+                                }
+                            }
+                        }),
+
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+
+                        // Párrafo con nombre del usuario y número de cédula
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: `En concordancia con las disposiciones anteriores, Yo ${nombreUsuario}, identificado con C.C. Nº ${cc}, Manifiesto voluntaria y plenamente consciente de las consecuencias legales y jurídicas que el presente escrito conlleva y lo acepto previo a la contratación del servicio.`,
+                                })
+                            ]
+                        }),
+
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+
+                        // Párrafo con título de "Disposiciones adicionales"
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "Disposiciones adicionales.",
+                                })
+                            ]
+                        }),
+
+                        // Espacio en blanco
+                        new Paragraph({ children: [] }),
+
+                        // Lista numerada
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "1. A quien firma el documento se le remitirá previo al evento la póliza de seguros por la cual se encuentra cubierta durante el evento a participar.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 1,
+                                }
+                            }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "2. Como participante del evento declaro que conozco y me comprometo a aplicar las normas de tránsito y seguridad que rigen la actividad a desarrollar y que la inaplicación de estas exonera de responsabilidad a la empresa ESPIRITU DE MONTAÑA S.A.S",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 1,
+                                }
+                            }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "3. Reconozco que antes, durante y después del evento, pueden presentarse situaciones de orden público que dificulten, restrinjan, impidan u obliguen a modificar o cancelar el evento y que dichas situaciones no serán imputables a ESPIRITU DE MONTAÑA S.A.S como organizador, así mismo este podrá tomar las medidas que considere pertinentes con el fin de salvaguardar la integridad de los participantes del evento sin que esto sea motivo de responsabilidad.",
+                                })
+                            ],
+                            style: 'ListParagraph',
+                            properties: {
+                                numbering: {
+                                    reference: 'Numbering',
+                                    level: 1,
+                                }
+                            }
+                        }),
+
+                    ]
+                }
+            ]
+        });
+
+
+        // Convierte el documento a un buffer
+        const buffer = await Packer.toBuffer(doc);
+
+        const correoHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Correo de Espíritu de Montaña</title>
+        </head>
+        <body>
+          <p>¡Hola ${nombreUsuario}!</p>
+          <p>Te enviamos tu documento de exoneración de responsabilidad que aceptaste con Espíritu de Montaña para el evento ${nombreEvento}.</p>
+         
+        </body>
+        </html>
+        `;
+        let resultEmail = await resend.sendFileExoneration(correoHTML, buffer, correoDestino)
+        // Envía el correo electrónico
+        res.json(resultEmail)
+
+    } catch (error) {
+        console.log('Error al crear o enviar el documento:', error);
+        res.status(500).send('Error al generar o enviar el documento');
+    }
+}
+
 
 
 
@@ -891,6 +1376,8 @@ module.exports = {
         bookingRoute,
         prebookingRoute,
         createInvoicesClients,
-        updateInvoicesClients
+        updateInvoicesClients,
+        CreateImgTreatmentFile,
+        CreateExonerationFile
     }
 }
