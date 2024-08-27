@@ -37,7 +37,8 @@ const {
     ClientsRouter,
     PostRouter,
     DashboardRouter,
-    WompiRouter
+    WompiRouter,
+    SistecreditoRouter
 } = require("./routes/main/manager");
 // =============================================================================
 // VIEW ENGINE SETUP
@@ -77,6 +78,7 @@ app.use('/api/v1/clients', ClientsRouter);
 app.use('/api/v1/post', PostRouter);
 app.use('/api/v1/dashboard', DashboardRouter);
 app.use('/api/v1/payment', WompiRouter)
+app.use('/api/v1/sistecredito', SistecreditoRouter)
 // =============================================================================
 // CATCH 404 AND FORWARD TO ERROR HANDLER
 // =============================================================================

@@ -5,5 +5,6 @@ module.exports = {
     clientsController: require('../clients'),
     postController   : require('../post'),
     dashboardController: require('../dashboard'),
-    wompiController: require('../wompi')
+    wompiController: require('../wompi'),
+    sistecreditoController: require('../sistecredito')
 }

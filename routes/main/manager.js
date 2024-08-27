@@ -5,5 +5,6 @@ module.exports = {
     ClientsRouter : require('../clients'),
     PostRouter    : require('../post'),
     DashboardRouter: require('../dashboard'),
-    WompiRouter: require('../wompi')
+    WompiRouter: require('../wompi'),
+    SistecreditoRouter: require('../sistecredito')
 }
