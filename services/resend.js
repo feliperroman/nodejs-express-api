@@ -1,5 +1,5 @@
 let { Resend } = require('resend');
-const resend = new Resend('re_fU5xW1LH_MYKBR8n2ScYxz8iMU8aTtSV6');
+const resend = 'api-key-resend'
 
 
 async function sendWelcome(text){
